@@ -1,32 +1,37 @@
 from flask import Flask, request, jsonify
-import google.generativeai as genai
 from flask_cors import CORS
+import google.generativeai as genai
+import os
 
 app = Flask(__name__)
 CORS(app)
 
-# ⚠️ Replace with your actual Gemini API key
-genai.configure(api_key="AIzaSyA8qqRU2jMOKU9eSC2O4N3wXUbfVxEhRxE")
+# Configure Gemini using environment variable
+genai.configure(api_key=os.environ["GOOGLE_API_KEY"])
 
-@app.route('/generate-cover-letter', methods=['POST'])
+model = genai.GenerativeModel("gemini-pro")
+
+@app.route("/generate-cover-letter", methods=["POST"])
 def generate_cover_letter():
-    data = request.json
-    name = data.get("name", "John Doe")
-    job_title = data.get("job_title", "Software Engineer")
-    company = data.get("company", "ABC Corp")
-    skills = data.get("skills", "Python, AI, Communication")
-    style = data.get("style", "formal")
+    data = request.get_json()
+
+    job_title = data.get("job_title", "")
+    company = data.get("company", "")
+    skills = data.get("skills", "")
+    experience = data.get("experience", "")
+    tone = data.get("tone", "professional")
 
     prompt = f"""
-    Write a {style} cover letter for the position of {job_title} at {company}.
-    The candidate's name is {name}, and they have the following skills: {skills}.
-    Make it professional and well-structured.
+    Write a {tone} cover letter for a position titled '{job_title}' at '{company}'.
+    The applicant has the following skills: {skills}, and the following experience: {experience}.
+    The letter should be concise, engaging, and suitable for copy-pasting into a job application.
     """
 
-    model = genai.GenerativeModel("gemini-pro")
-    response = model.generate_content(prompt)
+    try:
+        response = model.generate_content(prompt)
+        return jsonify({"cover_letter": response.text})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
-    return jsonify({"cover_letter": response.text})
-
-if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0')
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)
