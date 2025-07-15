@@ -6,7 +6,7 @@ app = Flask(__name__)
 CORS(app)
 
 # ⚠️ Replace with your actual Gemini API key
-genai.configure(api_key="YOUR_GEMINI_API_KEY")
+genai.configure(api_key="AIzaSyA8qqRU2jMOKU9eSC2O4N3wXUbfVxEhRxE")
 
 @app.route('/generate-cover-letter', methods=['POST'])
 def generate_cover_letter():
