@@ -10,7 +10,7 @@ CORS(app)
 genai.configure(api_key=os.environ["GOOGLE_API_KEY"])
 
 # Use Gemini 1.5 Flash for faster, cheaper responses
-model = genai.GenerativeModel("gemini-1.5-flash")
+model = genai.GenerativeModel("gemini-2.5-flash")
 
 @app.route("/generate-cover-letter", methods=["POST"])
 def generate_cover_letter():
